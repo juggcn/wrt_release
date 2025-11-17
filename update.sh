@@ -112,7 +112,7 @@ remove_unwanted_packages() {
         "luci-app-passwall" "luci-app-ddns-go" "luci-app-rclone" "luci-app-ssr-plus"
         "luci-app-vssr" "luci-app-daed" "luci-app-dae" "luci-app-alist" "luci-app-homeproxy"
         "luci-app-haproxy-tcp" "luci-app-openclash" "luci-app-mihomo" "luci-app-appfilter"
-        "luci-app-msd_lite"
+        "luci-app-msd_lite" "luci-app-easymesh"
     )
     local packages_net=(
         "haproxy" "xray-core" "xray-plugin" "dns2socks" "alist" "hysteria"
@@ -413,6 +413,21 @@ add_ax6600_led() {
         echo "错误：克隆操作后未找到目录 $athena_led_dir" >&2
         exit 1
     fi
+}
+
+add_custom_easymesh() {
+    local easymesh_dir="$BUILD_DIR/package/luci-app-easymesh"
+    local repo_url="https://github.com/theosoft-git/luci-app-easymesh.git"
+
+    echo "正在添加自定义 luci-app-easymesh..."
+    rm -rf "$easymesh_dir" 2>/dev/null
+
+    if ! git clone --depth=1 "$repo_url" "$easymesh_dir"; then
+        echo "错误：从 $repo_url 克隆 luci-app-easymesh 仓库失败" >&2
+        exit 1
+    fi
+
+    echo "luci-app-easymesh 已成功替换为自定义版本。"
 }
 
 change_cpuusage() {
@@ -1050,6 +1065,7 @@ main() {
     update_feeds
     remove_unwanted_packages
     remove_tweaked_packages
+    add_custom_easymesh
     update_homeproxy
     fix_default_set
     fix_miniupnpd
