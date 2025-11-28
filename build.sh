@@ -113,31 +113,6 @@ mkdir -p "$FIRMWARE_DIR"
 find "$TARGET_DIR" -type f \( -name "*.bin" -o -name "*.manifest" -o -name "*efi.img.gz" -o -name "*.itb" -o -name "*.fip" -o -name "*.ubi" -o -name "*rootfs.tar.gz" \) -exec cp -f {} "$FIRMWARE_DIR/" \;
 \rm -f "$BASE_PATH/firmware/Packages.manifest" 2>/dev/null
 
-# ============ 打包插件 (.ipk) ============
-PACKAGES_DIR="$BASE_PATH/$BUILD_DIR/bin/packages"
-if [[ -d "$PACKAGES_DIR" ]]; then
-    echo "Packing .ipk packages into plugins.tar.gz..."
-    # 创建临时目录用于整理（可选，也可直接打包整个 packages 目录）
-    PLUGINS_TMP="$BASE_PATH/plugins_tmp"
-    mkdir -p "$PLUGINS_TMP"
-
-    # 只复制 .ipk 文件（避免复制 Packages 索引等）
-    find "$PACKAGES_DIR" -type f -name "*.ipk" -exec cp {} "$PLUGINS_TMP/" \;
-
-    if [[ -n "$(ls -A "$PLUGINS_TMP")" ]]; then
-        tar -czf "$FIRMWARE_DIR/plugins.tar.gz" -C "$PLUGINS_TMP" .
-        echo "Plugins package created: $FIRMWARE_DIR/plugins.tar.gz"
-    else
-        echo "No .ipk files found to pack."
-    fi
-
-    # 清理临时目录
-    rm -rf "$PLUGINS_TMP"
-else
-    echo "Packages directory not found: $PACKAGES_DIR"
-fi
-
-
 if [[ -d $BASE_PATH/action_build ]]; then
     make clean
 fi
